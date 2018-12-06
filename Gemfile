@@ -15,9 +15,10 @@ gem 'puma', '~> 3.11'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'jbuilder', '~> 2.5'
 
+gem "http", ">= 0.7.3"
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
-gem 'twitter', '~> 5.3.1'
+gem 'twitter', '~> 6.2'
 gem 'omniauth', '~> 1.6', '>= 1.6.1'
 gem 'omniauth-twitter', '~> 1.0.1'
 
