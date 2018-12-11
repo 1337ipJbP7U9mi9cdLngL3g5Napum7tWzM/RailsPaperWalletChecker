@@ -3,6 +3,7 @@ import WAValidator from 'wallet-address-validator';
 import CSVReader from 'react-csv-reader';
 import {CSVLink} from 'react-csv';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FaGithub, FaReddit, FaBitcoin } from 'react-icons/fa';
 import { Button, Form, FormGroup, Popover, PopoverHeader, PopoverBody,
          Modal, ModalHeader, ModalBody, Table, Input, InputGroup,
          InputGroupAddon } from 'reactstrap';
@@ -11,14 +12,7 @@ import '../styles/components/addresslist/addresslist.scss';
 import Addresses from './Addresses';
 import Totals from './Totals';
 import QrAddressReader from './QrAddressReader';
-import {bitcoinApi} from '../apis/bitcoin';
-import {bchApi} from '../apis/bitcoincash';
-import {dashApi} from '../apis/dash';
-import {dogeApi} from '../apis/doge';
-import {ethApi} from '../apis/ethereum';
-import {litecoinApi} from '../apis/litecoin';
-import {zcashApi} from '../apis/zcash';
-import {fiatPriceCheck} from '../apis/fiat';
+import {allApis} from '../apis/allApis';
 
 class AddressList extends Component {
   constructor(props) {
@@ -44,10 +38,12 @@ class AddressList extends Component {
     this.toggleModal = this.toggleModal.bind(this);
     this.toggleQrModal = this.toggleQrModal.bind(this);
     this.toggleInfo = this.toggleInfo.bind(this);
+    this.handleSocial = this.handleSocial.bind(this);
   }
   
   componentDidUpdate(prevProps) {
     this.clearAddresses(prevProps);
+    this.updateAddresses(prevProps);
   }
   
 
@@ -55,7 +51,26 @@ class AddressList extends Component {
     if (prevProps.cryptoSym !== this.props.cryptoSym) {
       this.setState({addresses: []});
       this.props.handleCheckBalanceState("unchecked");
-      this.props.handlefiatPrice(0);
+      this.props.handleFiatPrice(0);
+    }
+  }
+  
+  updateAddresses(prevProps) {
+    if (prevProps.fiatSym !== this.props.fiatSym) {
+      const addresses = this.state.addresses.map(a => a.key);
+      let i;
+      for (i = 0; i < addresses.length; i++) {
+        const updateAddress = addresses[i];
+        const index = this.state.addresses.findIndex(x => x.key === updateAddress);
+        const newFiatAmount = this.state.addresses[index].cryptoAmount * this.props.fiatPrice;
+        this.setState((prevState) => {
+          const address = prevState.addresses[index];
+          address.fiatAmount = newFiatAmount;
+          return ({
+            address
+          });
+        });
+      }
     }
   }
   
@@ -76,48 +91,17 @@ class AddressList extends Component {
   checkBalance(event) {
     this.props.handleCheckBalanceState("checking");
     // const cryptoId = this.props.cryptoId;
-    const handlefiatPrice = this.props.handlefiatPrice;
+    const fiatSym = this.props.fiatSym;
+    const handleFiatPrice = this.props.handleFiatPrice;
     const addresses = this.state.addresses.map(a => a.key);
     const cryptoSym = this.props.cryptoSym;
     const cryptoName = this.props.cryptoName;
     
-    let fiatApis = new Promise(function(resolve, reject) {
-      fiatPriceCheck(cryptoName, handlefiatPrice, resolve, reject);
-    });
-    
-    let cryptoApis = new Promise(function(resolve, reject) {
-      switch(cryptoSym) {
-        case 'btc':
-          bitcoinApi(addresses, resolve, reject);
-          break;
-        case 'ltc':
-          litecoinApi(addresses, resolve, reject);
-          break;
-        case 'dash':
-          dashApi(addresses, resolve, reject);
-          break;
-        case 'zec':
-          zcashApi(addresses, resolve, reject);
-          break;
-        case 'doge':
-          dogeApi(addresses, resolve, reject);
-          break;
-        case 'bch':
-          bchApi(addresses, resolve, reject);
-          break;
-        case 'eth':
-          ethApi(addresses, resolve, reject);
-          break;
-        default:
-          console.log("didn't get either");  
-      }
-    });
-    
-    const balancePromises = [fiatApis, cryptoApis];
+    const balancePromises = allApis(addresses, cryptoName, cryptoSym, fiatSym, handleFiatPrice);
     
     Promise.all(balancePromises)
       .then((result) => {
-        console.log(result[1]);
+        // console.log(result[1]);
         let i;
         for (i = 0; i < addresses.length; i++) {
           const addressBalance = parseFloat(result[1][addresses[i]]);
@@ -126,14 +110,14 @@ class AddressList extends Component {
           const addressAttributes = {
             cryptoAmount: addressBalance,
             fiatAmount: addressBalance * this.props.fiatPrice
-        };
-        this.setState({
-          addresses: [
-            ...this.state.addresses.slice(0, index),
-            Object.assign({}, this.state.addresses[index], addressAttributes),
-            ...this.state.addresses.slice(index + 1)
-          ]
-        });
+          };
+          this.setState({
+            addresses: [
+              ...this.state.addresses.slice(0, index),
+              Object.assign({}, this.state.addresses[index], addressAttributes),
+              ...this.state.addresses.slice(index + 1)
+            ]
+          });
         }
         this.props.handleCheckBalanceState("checked");
       });
@@ -228,6 +212,26 @@ class AddressList extends Component {
     });
   }
   
+  handleSocial(social) {
+    switch(social) {
+      case "github": {
+        window.open('https://github.com/1337ipJbP7U9mi9cdLngL3g5Napum7tWzM/PaperWalletChecker', "_blank");
+        break;
+      }
+      case "reddit": {
+        window.open('https://reddit.com', '_blank');
+        break;
+      }
+      case "bitcoin": {
+        window.open('https://bitcointalk.org/', '_blank');
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+  
   render(){
     const csvDownloadHeaders = [
       {label: 'Address', key: 'key'},
@@ -285,6 +289,23 @@ class AddressList extends Component {
           </CSVLink>
           <h5 className="export-filename">Export Filename : </h5>
           <Input className="col-9" onChange={this.handleFilename}></Input>
+          <div className="social-media">
+            <div className="col-4 d-inline">
+              <Button size="sm" onClick={() => this.handleSocial("github")}>
+                <FaGithub />
+              </Button>
+            </div>
+            <div className="col-4 d-inline">
+              <Button size="sm" onClick={() => this.handleSocial("reddit")}>
+                <FaReddit />
+              </Button>
+            </div>
+            <div className="col-4 d-inline">
+              <Button size="sm" onClick={() => this.handleSocial("bitcoin")}>
+                <FaBitcoin />
+              </Button>
+            </div>
+          </div>
         </div>
         <div className="col-9">
           <div className="input-form col-12">
@@ -323,7 +344,8 @@ class AddressList extends Component {
             </Form>
           </div>
           <Table hover={true}>
-            <Totals 
+            <Totals   
+              fiatSym={this.props.fiatSym}
               addresses={this.state.addresses}
               checkBalanceState={this.props.checkBalanceState}
               cryptoSym={this.props.cryptoSym}
