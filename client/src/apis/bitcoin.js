@@ -58,6 +58,7 @@ export const bitcoinApi = async (addresses, resolve, reject) => {
     await delay();
   }
   
+  console.log(addressesBalance);
   resolve(addressesBalance);
 };
   
