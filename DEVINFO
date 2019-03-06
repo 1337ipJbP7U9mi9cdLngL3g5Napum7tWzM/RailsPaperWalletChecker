@@ -1,4 +1,11 @@
 https://blog.heroku.com/a-rock-solid-modern-web-stack
 
-react / rails 
+react / rails
 
+Dev Mode:
+
+Run rails s -p 3001
+3001 is the proxy that the react app will look for
+
+On another tab go into the client folder and run yarn
+Then run yarn start
