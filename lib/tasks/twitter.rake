@@ -1,22 +1,22 @@
 namespace :twitter do
   task promote: :environment do
     puts "ahhhhhhh"
-    
+
     require 'twitter'
     require 'net/http'
     require 'json'
-   
+
     client = Twitter::REST::Client.new do |config|
       config.consumer_key        = ENV["CONSUMER_KEY"]
       config.consumer_secret     = ENV["CONSUMER_SECRET"]
       config.access_token        = ENV["ACCESS_TOKEN"]
       config.access_token_secret = ENV["ACCESS_TOKEN_SECRET"]
     end
-    
-    
+
+
     cryptoIdArray = [ 1, 2, 1831, 1027, 1437, 131, 74 ]
-  
-    # The cryptoIdArray contains the Coinmarketcap Ids for the cryptocurrencies  
+
+    # The cryptoIdArray contains the Coinmarketcap Ids for the cryptocurrencies
     #   cryptoIdArray.each do |id|
       id = cryptoIdArray[rand(21)]
       puts "id is #{id}"
@@ -33,11 +33,14 @@ namespace :twitter do
       else
         direction = "DOWN"
       end
-      tweet = "#{name} price #{price}, #{direction} #{percentChange} percent in 24hrs.  Check your #{symbol} paperwallets quickly and securely at https://goo.gl/B3mVqX" 
+      tweet = "#{name} price #{price}, #{direction} #{percentChange} percent in 24hrs.
+              Check your #{symbol} paperwallets quickly and securely at https://goo.gl/B3mVqX
+                         Or
+              Check out our Android mobile app https://play.google.com/store/apps/details?id=host.expo.rnpaperwalletchecker&hl=en"
       puts tweet
-  
-    #  end 
+
+    #  end
     client.update(tweet)
-    
+
   end
 end
