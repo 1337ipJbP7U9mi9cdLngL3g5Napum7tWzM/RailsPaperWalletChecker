@@ -1,4 +1,4 @@
 [submodule "client"]
 	path = client
-	url = git@github.com:1337ipJbP7U9mi9cdLngL3g5Napum7tWzM/PaperWalletChecker.git
+	url = https://github.com/1337ipJbP7U9mi9cdLngL3g5Napum7tWzM/PaperWalletChecker.git
 	branch = master
