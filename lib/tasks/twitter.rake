@@ -34,9 +34,9 @@ namespace :twitter do
         direction = "DOWN"
       end
       tweet = "#{name} price #{price}, #{direction} #{percentChange} percent in 24hrs.
-              Check your #{symbol} paperwallets quickly and securely at http://tiny.cc/03ve4y
-                         Or
-              Check out our Android mobile app http://tiny.cc/h4ve4y"
+              Check your #{symbol} paperwallets quickly and securely at https://www.1337ipjbp7u9mi9cdlngl3g5napum7twzm.com/
+                         or
+                         Android App at https://play.google.com/store/apps/details?id=host.expo.rnpaperwalletchecker&hl=en"
       puts tweet
 
     #  end
