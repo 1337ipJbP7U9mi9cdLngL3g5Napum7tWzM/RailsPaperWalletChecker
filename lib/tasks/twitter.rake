@@ -1,6 +1,5 @@
 namespace :twitter do
   task promote: :environment do
-    puts "ahhhhhhh"
 
     require 'twitter'
     require 'net/http'
