@@ -1,5 +1,5 @@
 class SomeWorker
-    include SuckerPunch::Worker
+    include SuckerPunch::Job
 
       def perform
         puts "In some worker"
