@@ -21,7 +21,7 @@ gem "http", ">= 0.7.3"
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 gem 'twitter', '~> 6.2'
-gem 'omniauth', '~> 1.6', '>= 1.6.1'
+gem 'omniauth', '~> 1.9'
 gem 'omniauth-twitter', '~> 1.0.1'
 
 # Use Capistrano for deployment
